@@ -40,21 +40,20 @@ items:
     source:
       type: "Git"
       git:
-        uri: "${REPO}"
+        uri: ${REPO}
+      contextDir: "openshift-tasks"
     strategy:
-      type: "JenkinsPipeline"
+      type: JenkinsPipeline
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
-        env:
-        - name: GUID
-          value: "${GUID}"
-        - name: REPO
-          value: "${REPO}/openshift-tasks"
-        - name: CLUSTER
-          value: "${CLUSTER}"
 kind: List
 metadata: []" | oc create -f - -n $GUID-jenkins
- 
+
+# For some reason the buildconfig wouldn't accept these env vars in the yaml, setting them works fine
+oc -n $GUID-jenkins set env bc/tasks-pipeline GUID=$GUID
+oc -n $GUID-jenkins set env bc/tasks-pipeline REPO=$REPO
+oc -n $GUID-jenkins set env bc/tasks-pipeline CLUSTER=$CLUSTER
+
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
   echo "Checking if Jenkins is Ready..."
