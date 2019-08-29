@@ -47,13 +47,13 @@ items:
         jenkinsfilePath: Jenkinsfile
         env:
         - name: GUID
-          value: ${GUID}
+          value: "${GUID}"
         - name: REPO
-          value: ${REPO}
+          value: "${REPO}/openshift-tasks"
         - name: CLUSTER
-          value: ${CLUSTER}
+          value: "${CLUSTER}"
 kind: List
-metadata: []" | oc create -f - -n ${GUID}-jenkins
+metadata: []" | oc create -f - -n $GUID-jenkins
  
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
