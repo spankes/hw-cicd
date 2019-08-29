@@ -88,6 +88,7 @@ podTemplate(
       // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
         echo "Deploying container image to Development Project ${devProject}"
+        def VERSION='${devTag} (tasks-dev)'
 
         script {
      
@@ -154,6 +155,7 @@ podTemplate(
 
       stage('Blue/Green Production Deployment') {
         echo "Blue/Green Production Deployment to ${prodProject}"
+        def VERSION='${prodTag} (tasks-blue)'
         script {
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
@@ -197,6 +199,7 @@ podTemplate(
 
       stage('Switch over to new Version') {
         echo "Switching Production application to ${destApp}."
+        def VERSION='${prodTag} (tasks-green)'
         script {
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
