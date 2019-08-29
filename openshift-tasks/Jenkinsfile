@@ -75,14 +75,13 @@ podTemplate(
         echo "Building OpenShift container image tasks:${devTag}"
 
         script {
-          sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n ${GUID}-tasks-dev"
-         // openshift.withCluster() {
-           // openshift.withProject("${devProject}") {
-             // openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+          openshift.withCluster() {
+            openshift.withProject("${devProject}") {
+              openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
 
-             // openshift.tag("tasks:latest", "tasks:${devTag}")
-           // }
-          //}
+              openshift.tag("tasks:latest", "tasks:${devTag}")
+            }
+          }
         }
       }
 
@@ -92,7 +91,13 @@ podTemplate(
 
         script {
      
-          openshift.withCluster() {
+          openshift.withCluster() {openshift.withCluster() {
+            openshift.withProject("${devProject}") {
+              openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+
+              openshift.tag("tasks:latest", "tasks:${devTag}")
+            }
+          }
             openshift.withProject("${devProject}") {
               // OpenShift 4
               //openshift.set("image", "dc/tasks", "tasks=image-registry.openshift-image-registry.svc:5000/${devProject}/tasks:${devTag}")

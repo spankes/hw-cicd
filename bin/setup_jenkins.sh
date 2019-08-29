@@ -54,6 +54,10 @@ oc -n $GUID-jenkins set env bc/tasks-pipeline GUID=$GUID
 oc -n $GUID-jenkins set env bc/tasks-pipeline REPO=$REPO
 oc -n $GUID-jenkins set env bc/tasks-pipeline CLUSTER=$CLUSTER
 
+# add jenkins service account to projects
+oc policy add-role-to-user edit system:serviceaccount:${GUID}-jenkins:jenkins -n ${GUID}-tasks-dev
+oc policy add-role-to-user edit system:serviceaccount:${GUID}-jenkins:jenkins -n ${GUID}-tasks-prod
+
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
   echo "Checking if Jenkins is Ready..."
