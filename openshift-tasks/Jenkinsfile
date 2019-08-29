@@ -33,9 +33,12 @@ podTemplate(
       def version = getVersionFromPom("pom.xml")
 
       // TBD Set the tag for the development image: version + build number
-      def devTag  = ""
+      def devTag  = "${version}-${BUILD_NUMBER}"
       // Set the tag for the production image: version
-      def prodTag = ""
+      def prodTag = "${version}"
+
+      def devProject="${GUID}-tasks-dev"
+      def prodProject="${GUID}-tasks-prod"
 
       // Using Maven build the war file
       // Do not run tests in this step
@@ -84,7 +87,7 @@ podTemplate(
 
       // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
-        echo "Deploying container image to Development Project"
+        echo "Deploying container image to Development Project ${devProject}"
 
         script {
      
@@ -150,6 +153,7 @@ podTemplate(
       def activeApp = ""
 
       stage('Blue/Green Production Deployment') {
+        echo "Blue/Green Production Deployment to ${prodProject}"
         script {
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
