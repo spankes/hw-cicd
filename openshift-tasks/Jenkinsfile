@@ -88,9 +88,10 @@ podTemplate(
       // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
         echo "Deploying container image to Development Project ${devProject}"
-
+  
         script {
-     
+          sh "oc set env dc/tasks -n ${GUID}-tasks-dev VERSION=\"${devTag} (tasks-dev)\""
+
           openshift.withCluster() {openshift.withCluster() {
             openshift.withProject("${devProject}") {
               openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
@@ -104,9 +105,6 @@ podTemplate(
 
               // For OpenShift 3 use this:
               openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
-
-              // set the version
-              openshift.selector("dc","tasks").env("VERSION","${devTag} (tasks-dev)")
 
               // Update the Config Map which contains the users for the Tasks application
               // (just in case the properties files changed in the latest commit)
@@ -165,6 +163,9 @@ podTemplate(
         echo "Blue/Green Production Deployment to ${prodProject}"
       
         script {
+          sh "oc set env dc/tasks -n ${GUID}-tasks-prod VERSION=\"${prodTag} (tasks-green)\""
+          sh "oc set env dc/tasks -n ${GUID}-tasks-prod VERSION=\"${prodTag} (tasks-blue)\""
+
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
               activeApp = openshift.selector("route", "tasks").object().spec.to.name
@@ -176,10 +177,6 @@ podTemplate(
 
               // Update the Image on the Production Deployment Config
               def dc = openshift.selector("dc/${destApp}").object()
-
-              // set the versions
-              openshift.selector("dc","tasks-blue").env("VERSION","${prodTag} (tasks-blue)")
-              openshift.selector("dc","tasks-green").env("VERSION","${prodTag} (tasks-green)")
 
               // OpenShift 4
               //dc.spec.template.spec.containers[0].image="image-registry.openshift-image-registry.svc:5000/${devProject}/tasks:${prodTag}"
