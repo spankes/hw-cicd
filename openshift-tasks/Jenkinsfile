@@ -121,7 +121,7 @@ podTemplate(
 
               echo "Waiting for ReplicationController tasks-${dc_version} to be ready"
               while (rc.spec.replicas != rc.status.readyReplicas) {
-                sleep 5
+                sleep 30
                 rc = openshift.selector("rc", "tasks-${dc_version}").object()
               }
             }
@@ -198,7 +198,7 @@ podTemplate(
               def rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
               echo "Waiting for ${destApp} to be ready"
               while (rc_prod.spec.replicas != rc_prod.status.readyReplicas) {
-                sleep 5
+                sleep 30
                 rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
               }
             }
